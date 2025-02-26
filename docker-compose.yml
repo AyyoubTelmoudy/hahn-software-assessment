@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./it-support-ticket-system
+    ports:
+      - "9090:9090"
+

@@ -3,33 +3,35 @@ package com.hahn.software.ui;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.net.http.*;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import com.google.gson.*;
+import com.hahn.software.constant.Constants;
 
 public class HomeScreen extends JFrame {
     private JTable ticketTable;
     private DefaultTableModel tableModel;
     private HashMap<Integer, JsonObject> ticketDataMap = new HashMap<>();
-    private JButton updateButton, addTicketButton;
+    private JButton updateButton, addTicketButton, searchButton;
+    private JComboBox<String> statusComboBox;
+    private JTextField ticketIdField;
+    private JButton logoutButton;
     private boolean isITSupportUser = false;
     private boolean isEmployeeUser = false;
 
     public HomeScreen() {
         setTitle("Home - Ticket List");
-        setSize(800, 400);
+        setSize(900, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Extract user roles
         checkUserRoles();
 
-        // Table Columns
         String[] columns = {"ID", "Title", "Category", "Status", "Priority", "Description"};
         tableModel = new DefaultTableModel(columns, 0);
         ticketTable = new JTable(tableModel);
@@ -37,37 +39,85 @@ public class HomeScreen extends JFrame {
         JScrollPane scrollPane = new JScrollPane(ticketTable);
         add(scrollPane, BorderLayout.CENTER);
 
-        // Buttons
+
+        JPanel searchPanel = new JPanel();
+        searchPanel.add(new JLabel("Status:"));
+
+        String[] statusOptions = {"","NEW", "IN_PROGRESS", "RESOLVED"};
+        statusComboBox = new JComboBox<>(statusOptions);
+        searchPanel.add(statusComboBox);
+
+        searchPanel.add(new JLabel("Ticket ID:"));
+        ticketIdField = new JTextField(10);
+        searchPanel.add(ticketIdField);
+
+        searchButton = new JButton("Search");
+        searchPanel.add(searchButton);
+
+        add(searchPanel, BorderLayout.NORTH);
+
         JPanel buttonPanel = new JPanel();
         JButton detailsButton = new JButton("View Details");
         addTicketButton = new JButton("New Ticket");
         updateButton = new JButton("Update Ticket");
+        logoutButton = new JButton("Logout");  // 🔹 Create Logout Button
 
         buttonPanel.add(detailsButton);
 
         if (isEmployeeUser) {
-            buttonPanel.add(addTicketButton); // Only employees can add new tickets
+            buttonPanel.add(addTicketButton);
         }
         if (isITSupportUser) {
-            buttonPanel.add(updateButton); // Only IT Support can update tickets
+            buttonPanel.add(updateButton);
         }
+
+        buttonPanel.add(logoutButton);
 
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Fetch tickets from API
-        fetchTickets();
+        fetchTickets(null, null);
 
-        // Button Actions
+        searchButton.addActionListener(e -> searchTickets());
         detailsButton.addActionListener(e -> showTicketDetails());
         addTicketButton.addActionListener(e -> new NewTicketScreen(this).setVisible(true));
         updateButton.addActionListener(e -> updateSelectedTicket());
+        logoutButton.addActionListener(e -> logout());
+        setVisible(true);
     }
 
-    private void fetchTickets() {
+    private void searchTickets() {
+        String selectedStatus = (String) statusComboBox.getSelectedItem();
+        String ticketId = ticketIdField.getText().trim();
+        String status = "All".equals(selectedStatus) ? null : selectedStatus;
+        fetchTickets(status, ticketId.isEmpty() ? null : ticketId);
+    }
+
+    private void fetchTickets(String status, String ticketId) {
         try {
             HttpClient client = HttpClient.newHttpClient();
+            String url;
+            if (isITSupportUser) {
+                url = Constants.BASE_URL+"/api/v1/it-support/all-ticket-list";
+            } else if (isEmployeeUser) {
+                url = Constants.BASE_URL+"/api/v1/employee/ticket-list";
+            } else {
+                JOptionPane.showMessageDialog(this, "Unauthorized user!");
+                return;
+            }
+            StringBuilder apiUrl = new StringBuilder(url);
+            if (status != null || ticketId != null) {
+                apiUrl.append("?");
+                if (status != null) {
+                    apiUrl.append("status=").append(status);
+                }
+                if (ticketId != null) {
+                    if (status != null) apiUrl.append("&");
+                    apiUrl.append("id=").append(ticketId);
+                }
+            }
+
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:9090/api/v1/it-support/all-ticket-list"))
+                    .uri(URI.create(apiUrl.toString()))
                     .header("Authorization", "Bearer " + LoginScreen.accessToken)
                     .GET()
                     .build();
@@ -80,21 +130,20 @@ public class HomeScreen extends JFrame {
                 if (jsonResponse.has("tickets") && jsonResponse.get("tickets").isJsonArray()) {
                     JsonArray tickets = jsonResponse.getAsJsonArray("tickets");
 
-                    tableModel.setRowCount(0); // Clear table
-                    ticketDataMap.clear(); // Clear previous data
+                    tableModel.setRowCount(0);
+                    ticketDataMap.clear();
 
                     for (JsonElement ticket : tickets) {
                         JsonObject ticketObj = ticket.getAsJsonObject();
-                        int ticketId = ticketObj.get("id").getAsInt();
+                        int ticketIdVal = ticketObj.get("id").getAsInt();
                         String title = ticketObj.has("title") ? ticketObj.get("title").getAsString() : "N/A";
                         String category = ticketObj.has("category") ? ticketObj.get("category").getAsString() : "N/A";
-                        String status = ticketObj.has("status") ? ticketObj.get("status").getAsString() : "N/A";
+                        String statusVal = ticketObj.has("status") ? ticketObj.get("status").getAsString() : "N/A";
                         String priority = ticketObj.has("priority") ? ticketObj.get("priority").getAsString() : "N/A";
                         String description = ticketObj.has("description") ? ticketObj.get("description").getAsString() : "N/A";
 
-                        // Add row to table
-                        tableModel.addRow(new Object[]{ticketId, title, category, status, priority, description});
-                        ticketDataMap.put(ticketId, ticketObj); // Store full ticket details
+                        tableModel.addRow(new Object[]{ticketIdVal, title, category, statusVal, priority, description});
+                        ticketDataMap.put(ticketIdVal, ticketObj);
                     }
                 } else {
                     JOptionPane.showMessageDialog(this, "No tickets found!");
@@ -152,9 +201,9 @@ public class HomeScreen extends JFrame {
         }
     }
     private void showTicketDetails() {
-        int selectedIndex = ticketTable.getSelectedRow(); // Get selected row index
+        int selectedIndex = ticketTable.getSelectedRow();
         if (selectedIndex != -1) {
-            int ticketId = (int) tableModel.getValueAt(selectedIndex, 0); // Get ticket ID from table
+            int ticketId = (int) tableModel.getValueAt(selectedIndex, 0);
             JsonObject ticketObj = ticketDataMap.get(ticketId);
 
             if (ticketObj != null) {
@@ -182,7 +231,15 @@ public class HomeScreen extends JFrame {
         }
     }
 
+    private void logout() {
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to logout?", "Logout", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            LoginScreen.accessToken = null;
+            new LoginScreen().setVisible(true);
+            dispose();
+        }
+    }
     public void refreshTickets() {
-        fetchTickets();
+        fetchTickets(null, null);
     }
 }

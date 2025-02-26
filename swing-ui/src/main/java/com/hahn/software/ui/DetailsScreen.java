@@ -17,10 +17,10 @@ public class DetailsScreen extends JFrame {
         panel.add(new JLabel("Status: " + status));
         panel.add(new JLabel("Priority: " + priority));
 
-        // Comments Section
+
         JTextArea commentsArea = new JTextArea();
         commentsArea.setEditable(false);
-        commentsArea.setText(String.join("\n", comments));  // Display comments as multi-line text
+        commentsArea.setText(String.join("\n", comments));
 
         JScrollPane scrollPane = new JScrollPane(commentsArea);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Comments"));

@@ -1,6 +1,7 @@
 package com.hahn.software.ui;
 
 import com.google.gson.JsonObject;
+import com.hahn.software.constant.Constants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,31 +21,78 @@ class NewTicketScreen extends JFrame {
         this.homeScreen = homeScreen;
 
         setTitle("Create New Ticket");
-        setSize(400, 300);
-        setLayout(new GridLayout(5, 2));
+        setSize(450, 350);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null); // Center window
 
-        add(new JLabel("Title:"));
-        titleField = new JTextField();
-        add(titleField);
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        add(new JLabel("Description:"));
-        descriptionArea = new JTextArea();
-        add(new JScrollPane(descriptionArea));
+        JLabel titleLabel = new JLabel("Title:");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(titleLabel, gbc);
 
-        add(new JLabel("Priority:"));
+        titleField = new JTextField(20);
+        titleField.setFont(new Font("Arial", Font.PLAIN, 14));
+        titleField.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        gbc.gridx = 1;
+        panel.add(titleField, gbc);
+
+        JLabel descriptionLabel = new JLabel("Description:");
+        descriptionLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(descriptionLabel, gbc);
+
+        descriptionArea = new JTextArea(3, 20);
+        descriptionArea.setFont(new Font("Arial", Font.PLAIN, 14));
+        descriptionArea.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        JScrollPane scrollPane = new JScrollPane(descriptionArea);
+        gbc.gridx = 1;
+        panel.add(scrollPane, gbc);
+
+
+        JLabel priorityLabel = new JLabel("Priority:");
+        priorityLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panel.add(priorityLabel, gbc);
+
         String[] priorities = {"LOW", "MEDIUM", "HIGH"};
         priorityBox = new JComboBox<>(priorities);
-        add(priorityBox);
+        priorityBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 1;
+        panel.add(priorityBox, gbc);
 
-        add(new JLabel("Category:"));
+        JLabel categoryLabel = new JLabel("Category:");
+        categoryLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        panel.add(categoryLabel, gbc);
+
         String[] categories = {"NETWORK", "HARDWARE", "SOFTWARE", "OTHER"};
         categoryBox = new JComboBox<>(categories);
-        add(categoryBox);
+        categoryBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 1;
+        panel.add(categoryBox, gbc);
 
         submitButton = new JButton("Submit");
-        add(submitButton);
+        submitButton.setFont(new Font("Arial", Font.BOLD, 14));
+        submitButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        panel.add(submitButton, gbc);
 
         submitButton.addActionListener(e -> submitTicket());
+
+        add(panel);
+        setVisible(true);
     }
 
     private void submitTicket() {
@@ -58,7 +106,7 @@ class NewTicketScreen extends JFrame {
             ticketData.addProperty("category", categoryBox.getSelectedItem().toString());
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:9090/api/v1/employee/create-ticket"))
+                    .uri(URI.create(Constants.BASE_URL+"/api/v1/employee/create-ticket"))
                     .header("Authorization", "Bearer " + LoginScreen.accessToken)
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(ticketData.toString()))

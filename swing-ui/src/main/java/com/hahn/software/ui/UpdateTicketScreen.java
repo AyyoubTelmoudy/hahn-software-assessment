@@ -7,6 +7,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import com.google.gson.JsonObject;
+import com.hahn.software.constant.Constants;
 
 public class UpdateTicketScreen extends JFrame {
     private JTextField titleField, categoryField, priorityField;
@@ -20,40 +21,93 @@ public class UpdateTicketScreen extends JFrame {
         this.homeScreen = homeScreen;
 
         setTitle("Update Ticket #" + ticketId);
-        setSize(400, 350);
-        setLayout(new GridLayout(6, 2));
+        setSize(450, 350);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
 
-        add(new JLabel("Title:"));
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel titleLabel = new JLabel("Title:");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(titleLabel, gbc);
+
         titleField = new JTextField(ticketObj.get("title").getAsString());
-        titleField.setEditable(false); // Title is not updated in this request
-        add(titleField);
+        titleField.setEditable(false);
+        titleField.setFont(new Font("Arial", Font.PLAIN, 14));
+        titleField.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        gbc.gridx = 1;
+        panel.add(titleField, gbc);
 
-        add(new JLabel("Category:"));
+        JLabel categoryLabel = new JLabel("Category:");
+        categoryLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(categoryLabel, gbc);
+
         categoryField = new JTextField(ticketObj.get("category").getAsString());
-        categoryField.setEditable(false); // Category is not updated in this request
-        add(categoryField);
+        categoryField.setEditable(false);
+        categoryField.setFont(new Font("Arial", Font.PLAIN, 14));
+        categoryField.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        gbc.gridx = 1;
+        panel.add(categoryField, gbc);
 
-        add(new JLabel("Status:"));
-        String[] statuses = {"NEW", "IN_PROGRESS", "RESOLVED"};  // Match enum values
+        JLabel statusLabel = new JLabel("Status:");
+        statusLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panel.add(statusLabel, gbc);
+
+        String[] statuses = {"NEW", "IN_PROGRESS", "RESOLVED"};
         statusComboBox = new JComboBox<>(statuses);
         statusComboBox.setSelectedItem(ticketObj.get("status").getAsString().toUpperCase());
-        add(statusComboBox);
+        statusComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 1;
+        panel.add(statusComboBox, gbc);
 
-        add(new JLabel("Priority:"));
+        JLabel priorityLabel = new JLabel("Priority:");
+        priorityLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        panel.add(priorityLabel, gbc);
+
         priorityField = new JTextField(ticketObj.get("priority").getAsString());
-        priorityField.setEditable(false); // Priority is not updated in this request
-        add(priorityField);
+        priorityField.setEditable(false);
+        priorityField.setFont(new Font("Arial", Font.PLAIN, 14));
+        priorityField.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        gbc.gridx = 1;
+        panel.add(priorityField, gbc);
 
-        add(new JLabel("Description:"));
+        JLabel descriptionLabel = new JLabel("Description:");
+        descriptionLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        panel.add(descriptionLabel, gbc);
+
         descriptionArea = new JTextArea(ticketObj.get("description").getAsString(), 3, 20);
-        descriptionArea.setEditable(false); // Description is not updated in this request
-        add(new JScrollPane(descriptionArea));
+        descriptionArea.setEditable(false);
+        descriptionArea.setFont(new Font("Arial", Font.PLAIN, 14));
+        descriptionArea.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        JScrollPane scrollPane = new JScrollPane(descriptionArea);
+        gbc.gridx = 1;
+        panel.add(scrollPane, gbc);
 
         JButton updateButton = new JButton("Update Status");
-        updateButton.addActionListener(e -> updateTicketStatus());
-        add(updateButton);
+        updateButton.setFont(new Font("Arial", Font.BOLD, 14));
+        updateButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        panel.add(updateButton, gbc);
 
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        updateButton.addActionListener(e -> updateTicketStatus());
+
+        add(panel);
         setVisible(true);
     }
 
@@ -61,11 +115,11 @@ public class UpdateTicketScreen extends JFrame {
         try {
             JsonObject updateData = new JsonObject();
             updateData.addProperty("ticketId", ticketId);
-            updateData.addProperty("status", (String) statusComboBox.getSelectedItem()); // Send only status and ID
+            updateData.addProperty("status", (String) statusComboBox.getSelectedItem());
 
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:9090/api/v1/it-support/change-ticket-status"))
+                    .uri(URI.create(Constants.BASE_URL+"/api/v1/it-support/change-ticket-status"))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + LoginScreen.accessToken)
                     .POST(HttpRequest.BodyPublishers.ofString(updateData.toString()))

@@ -72,7 +72,6 @@ public class ITServiceImpl implements ITService {
         changeTicketStatusResponse.setMessage(TICKET_STATUS_UPDATED_SUCCESSFULLY);
         return changeTicketStatusResponse;
     }
-
     @Override
     public GenericResponse getAllTicketsList(Long ticketId, String status) throws TicketStatusNotFoundException {
         TicketStatus ticketStatus = null;

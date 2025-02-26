@@ -11,7 +11,6 @@ public class Ticket {
     private String priority;
     private List<Comment> comments;
 
-    // Constructors
     public Ticket() {}
 
     public Ticket(int id, String title, String description, String category, String status, String priority, List<Comment> comments) {
@@ -24,7 +23,6 @@ public class Ticket {
         this.comments = comments;
     }
 
-    // Getters and Setters
     public int getId() {
         return id;
     }
