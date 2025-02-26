@@ -54,9 +54,9 @@ It gives them the possibility to create tickets and the it-support members proce
 - Developed a responsive desktop UI using **Swing**.
 - Designed with **GridBagLayout** for an intuitive user experience.
 
-![front1.PNG](assets%2Ffront1.png)
-![front2.PNG](assets%2Ffront2.png)
-![front3.PNG](assets%2Ffront3.png)
+![front1.PNG](assets%2Ffront1.PNG)
+![front2.PNG](assets%2Ffront2.PNG)
+![front3.PNG](assets%2Ffront3.PNG)
 ![front4.PNG](assets%2Ffront4.PNG)
 
 3. **Docker Integration**:
