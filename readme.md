@@ -1,4 +1,4 @@
-# Employee Records Management System
+# IT Support System
 
 ## Project Overview
 
@@ -16,7 +16,7 @@ It gives them the possibility to create tickets and the it-support members proce
     - Priority
 
 2. **Role-Based Permissions**
-- **Employees **:
+- **Employees**:
     - Create and view their own tickets.
 - **It-support members**:
     - Update ticket status and add comments to tickets.
@@ -54,10 +54,11 @@ It gives them the possibility to create tickets and the it-support members proce
 - Developed a responsive desktop UI using **Swing**.
 - Designed with **GridBagLayout** for an intuitive user experience.
 
-![front1.png](assets%2Ffront1.png)
-![front2.png](assets%2Ffront2.png)
-![front3.png](assets%2Ffront3.png)
-![front4.png](assets%2Ffront4.png)
+![front1.PNG](assets%2Ffront1.png)
+![front2.PNG](assets%2Ffront2.png)
+![front3.PNG](assets%2Ffront3.png)
+![front4.PNG](assets%2Ffront4.PNG)
+
 3. **Docker Integration**:
 - Backedn dockerized for consistent deployment.
 - H2 database included within the Docker setup for seamless testing.
