@@ -2,51 +2,34 @@
 
 ## Project Overview
 
-The **Employee Records Management System** is an internal application designed to centralize employee data management across departments. It provides secure access controls, detailed audit trails, advanced search and filtering capabilities, and reporting features to streamline HR and administrative workflows.
+The **IT Support System** is an internal application designed to help employees submiting issues related to it material and software. 
+It gives them the possibility to create tickets and the it-support members process it.
 
 ### Key Features
-1. **Employee Data Management**
+1. **Tickets management**
 - Manages the following attributes:
-    - Full Name
-    - Employee ID
-    - Job Title
-    - Department
-    - Hire Date
-    - Employment Status
-    - Contact Information
-    - Address
+    - Ticket ID
+    - Category
+    - Status
+    - Title
+    - Description
+    - Priority
 
 2. **Role-Based Permissions**
-- **HR Personnel**:
-    - Full CRUD (Create, Read, Update, Delete) operations on all employee data.
-- **Managers**:
-    - Limited editing rights for employees within their department.
-- **Administrators**:
-    - Full system access, including configuration settings and user permission management.
+- **Employees **:
+    - Create and view their own tickets.
+- **It-support members**:
+    - Update ticket status and add comments to tickets.
 
 3. **Audit Trail**
-- Logs all changes to employee records with detailed information about the user who made the modification and a timestamp.
+- Logs all changes of ticket status and comments.
 
 4. **Search and Filtering**
 - Allows searching by:
-    - Name
-    - Employee ID
-    - Department
-    - Job Title
-- Provides filtering based on:
-    - Employment Status
-    - Department
-    - Hire Date
+    - Ticket ID
+    - Ticket status
 
-5. **Validation**
-- Ensures:
-    - Valid email formats.
-    - Unique Employee IDs to prevent duplication.
-
-6. **Reporting**
-- Generates basic reports for insights into employee data.
-
-7. **Swagger Documentation**
+5. **Swagger Documentation**
 - Comprehensive documentation of the API endpoints using **Swagger OpenAPI**, enabling developers to test and understand the backend functionality easily.
 
 ---
@@ -73,38 +56,23 @@ The **Employee Records Management System** is an internal application designed t
 
 ![front1.png](assets%2Ffront1.png)
 ![front2.png](assets%2Ffront2.png)
-
+![front3.png](assets%2Ffront3.png)
+![front4.png](assets%2Ffront4.png)
 3. **Docker Integration**:
-- Application fully dockerized for consistent deployment.
+- Backedn dockerized for consistent deployment.
 - H2 database included within the Docker setup for seamless testing.
-
-![docker.png](assets%2Fdocker.png)
 
 4. **Testing**:
 - Comprehensive unit and integration tests written using **JUnit** and **Mockito**.
 - Created a **Postman Collection** to validate API endpoints.
 
-![test.PNG](assets%2Ftest.PNG)
 ---
-
+demo_video%2Fdemo.mkv
 ## Demo Video
 
-Check out the demo video of the project here: [Video Demo](https://drive.google.com/file/d/1VTG2NWFF-MW0oMj0__-MeGuRZyKPkbcV/view?usp=sharing)
+Check out the demo video of the project here: [Video Demo](https://github.com/AyyoubTelmoudy/hahn-software-assessment/tree/main/demo_video)
 
 
-## Next Steps
-- **Advanced Search & Filtering**:
-    - Implement multi-criteria search capabilities.
-- **Enhanced Audit Trail**:
-    - Add detailed logs for API access and user actions.
-- **Reports Module**:
-    - Build report generation templates for exporting employee data.
-- **Database Migration**:
-    - Transition to **Oracle SQL** for production environments.
-- **UI Enhancements**:
-    - Improve the Swing-based interface with better visual elements and user-friendly features.
-
----
 
 ## Instructions for Running the Application
 
@@ -114,7 +82,7 @@ Check out the demo video of the project here: [Video Demo](https://drive.google.
 - **Postman** (optional, for API testing).
 
 ### Swagger
-- **Swagger** http://localhost:8080/swagger-ui.html
+- **Swagger** http://localhost:9090/swagger-ui.html
 
 
 ### Important Note for GUI (Swing) Application Users
@@ -137,3 +105,8 @@ If you plan to run the Swing-based GUI application on Windows using WSL2 or on L
 2. Run The Project:
    ```bash
     docker-compose up --build
+
+3. Check swagger on http://localhost:9090/swagger-ui.html:
+
+
+4. click on the executable jar : swing-ui.jar to run the ui
